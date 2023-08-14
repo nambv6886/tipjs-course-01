@@ -1,8 +1,11 @@
 'use strict'
 
 const ShopModel = require('../models/shop.model');
-const bcrypt = require('brcypt');
+const bcrypt = require('bcrypt');
 const crypto = require('crypto');
+const KeyTokenService = require('./keyToken.service');
+const { createTokenPair } = require('../auth/authUtils');
+const { getInfoData } = require('../utils');
 
 const RoleShop = {
 	SHOP: 'SHOP',
@@ -18,7 +21,6 @@ class AccessService {
 		password
 	}) => {
 		try {
-				
 			// step1: check email
 			const holderShop = await ShopModel.findOne({email}).lean();
 			if(holderShop) {
@@ -37,14 +39,58 @@ class AccessService {
 			});
 			if (newShop) {
 				// created privateKey, publicKey
-				const {
-					privateKey,
-					publicKey
-				} = crypto.generateKeyPairSync('rsa', {
-					modulusLength: 4096
-				});
-			}
+				// lv xxxx
+				// const {
+				// 	privateKey,
+				// 	publicKey
+				// } = crypto.generateKeyPairSync('rsa', {
+				// 	modulusLength: 4096,
+				// 	publicKeyEncoding: {
+				// 		type:'pkcs1',
+				// 		format: 'pem'
+				// 	},
+				// 	privateKeyEncoding: {
+				// 		type:'pkcs1',
+				// 		format: 'pem'
+				// 	}
+				// });
+				const privateKey = crypto.randomBytes(64).toString('hex');
+				const publicKey = crypto.randomBytes(64).toString('hex');
 
+				const keyStore = await KeyTokenService.createKeyToken({
+					userId: newShop._id,
+					publicKey,
+					privateKey
+				});
+
+				if(!keyStore) {
+					return {
+						code: 'xxxx',
+						message: 'public key string error!' 
+					}
+				}
+
+				const tokens = await createTokenPair({
+					userId: newShop._id,
+					email					
+				}, publicKey, privateKey);
+
+				return {
+					code: 201,
+					metadata: {
+						shop: getInfoData({
+							fields: ['_id', 'name'],
+							object: newShop
+						}),
+						tokens
+					}
+				}
+			}
+			
+			return {
+				code: 200,
+				metatdata: null
+			}
 		} catch (error) {
 			return {
 					code: 'xxx',
