@@ -1,11 +1,15 @@
 'use strict'
 
-const ShopModel = require('../models/shop.model');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
+
+const ShopModel = require('../models/shop.model');
+
 const KeyTokenService = require('./keyToken.service');
 const { createTokenPair } = require('../auth/authUtils');
 const { getInfoData } = require('../utils');
+
+const { BadRequestRequestError } = require('../core/error.response');
 
 const RoleShop = {
 	SHOP: 'SHOP',
@@ -24,10 +28,7 @@ class AccessService {
 			// step1: check email
 			const holderShop = await ShopModel.findOne({email}).lean();
 			if(holderShop) {
-				return {
-					code: 'xxxx',
-					message: 'Shop already registered!'
-				}
+				throw new BadRequestRequestError('Error: Shop already registered!');
 			}
 
 			const passwordHash = await bcrypt.hash(password, 10);
