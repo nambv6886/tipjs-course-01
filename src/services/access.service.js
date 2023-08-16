@@ -24,7 +24,6 @@ class AccessService {
 		email,
 		password
 	}) => {
-		try {
 			// step1: check email
 			const holderShop = await ShopModel.findOne({email}).lean();
 			if(holderShop) {
@@ -92,13 +91,6 @@ class AccessService {
 				code: 200,
 				metatdata: null
 			}
-		} catch (error) {
-			return {
-					code: 'xxx',
-					message: error.message,
-					status: 'error'
-			}
-		}
 	}
 
 
