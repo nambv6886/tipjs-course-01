@@ -56,6 +56,7 @@ const authentication = asyncHandler(async (req, res, next) => {
     req.keyStore = keyStore;
     return next();
   } catch (error) {
+    console.log('err:', error)
     throw error;
   }
 })
