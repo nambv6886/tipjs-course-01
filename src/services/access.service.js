@@ -133,6 +133,10 @@ class AccessService {
 			tokens
 		}
 	}
+
+	static logout = async (keyStore) => {
+		return await KeyTokenService.removeKeyById(keyStore._id);
+	}
 }
 
 module.exports = AccessService;
