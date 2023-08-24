@@ -37,7 +37,8 @@ class AccessService {
 				email,
 				name,
 				password: passwordHash,
-				roles: [RoleShop.SHOP]
+				roles: [RoleShop.SHOP],
+				status: 'active'
 			});
 			if (newShop) {
 				// created privateKey, publicKey
@@ -78,14 +79,11 @@ class AccessService {
 				}, publicKey, privateKey);
 
 				return {
-					code: 201,
-					metadata: {
-						shop: getInfoData({
-							fields: ['_id', 'name'],
-							object: newShop
-						}),
-						tokens
-					}
+					shop: getInfoData({
+						fields: ['_id', 'name'],
+						object: newShop
+					}),
+					tokens
 				}
 			}
 			
