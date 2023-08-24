@@ -6,11 +6,12 @@ const crypto = require('crypto');
 const ShopModel = require('../models/shop.model');
 
 const KeyTokenService = require('./keyToken.service');
-const { createTokenPair } = require('../auth/authUtils');
+const { createTokenPair, verifyJWT } = require('../auth/authUtils');
 const { getInfoData } = require('../utils');
 
-const { BadRequestRequestError, AuthFailureError } = require('../core/error.response');
+const { BadRequestRequestError, AuthFailureError, ForbidenError } = require('../core/error.response');
 const { findByEmail } = require('./shop.service');
+const { Types } = require('mongoose');
 
 const RoleShop = {
 	SHOP: 'SHOP',
@@ -136,6 +137,44 @@ class AccessService {
 
 	static logout = async (keyStore) => {
 		return await KeyTokenService.removeKeyById(keyStore._id);
+	}
+
+	/**
+	 * check this token used?
+	 * 
+	 */
+	static handlerRefreshToken = async ({
+		refreshToken,
+		user,
+		keyStore
+	}) => {
+
+		const {userId, email} = user;
+		if (keyStore.refreshTokenUsed.includes(refreshToken)) {
+			await KeyTokenService.deleteKeyById(userId); 
+			throw new ForbidenError('Something wrong happened!! Pls relogin'); 
+		}
+
+		if (keyStore.refreshToken !== refreshToken) throw new AuthFailureError('Shop not registered');
+
+		const foundShop = await findByEmail({email});
+		if (!foundShop) throw new AuthFailureError('Shop not registered');
+
+		const tokens = await createTokenPair({userId, email}, keyStore.publicKey, keyStore.privateKey);
+
+		await KeyTokenService.updateOne({ user: new Types.ObjectId(userId) }, {
+			$set: {
+				refreshToken: tokens.refreshToken,
+			},
+			$addToSet: {
+				refreshTokenUsed: refreshToken
+			}
+		});
+
+		return {
+			user,
+			tokens
+		}
 	}
 }
 

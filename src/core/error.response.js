@@ -31,10 +31,16 @@ class NotFoundError extends ErrorResponse {
     super(message, statusCode);
   }
 }
+class ForbidenError extends ErrorResponse {
+  constructor(message = ReasonPhrases.ForbidenError, statusCode = StatusCodes.ForbidenError) {
+    super(message, statusCode);
+  }
+}
 
 module.exports = {
   ConflictRequestError,
   BadRequestRequestError,
   AuthFailureError,
-  NotFoundError
+  NotFoundError,
+  ForbidenError
 }
