@@ -77,8 +77,8 @@ const electronicSchema = new Schema({
 
 //Export the model
 module.exports = {
-  prodcut: model(DOCUMENT_NAME, productSchema),
-  electronic: model('Electronic', clothingSchema),
-  clothing: model('Clothing', electronicSchema),
+  product: model(DOCUMENT_NAME, productSchema),
+  electronic: model('Electronic', electronicSchema),
+  clothing: model('Clothing', clothingSchema),
 
 }

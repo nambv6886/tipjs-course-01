@@ -13,7 +13,7 @@ const HEADER = {
   REFRESHTOKEN: 'x-rtoken-id'
 }
 
-const createTokenPair = async (payload, publicKey, privateKey) => {
+const createTokenPair = (payload, publicKey, privateKey) => {
   try {
     const accessToken = jwt.sign(payload, publicKey, {
       expiresIn: '2 days',

@@ -73,7 +73,7 @@ class AccessService {
 					}
 				}
 
-				const tokens = await createTokenPair({
+				const tokens = createTokenPair({
 					userId: newShop._id,
 					email					
 				}, publicKey, privateKey);
@@ -113,7 +113,7 @@ class AccessService {
 		const privateKey = crypto.randomBytes(64).toString('hex');
 		const publicKey = crypto.randomBytes(64).toString('hex');
 
-		const tokens = await createTokenPair({
+		const tokens = createTokenPair({
 			userId: foundShop._id,
 			email					
 		}, publicKey, privateKey);
@@ -158,7 +158,7 @@ class AccessService {
 		const foundShop = await findByEmail({email});
 		if (!foundShop) throw new AuthFailureError('Shop not registered');
 
-		const tokens = await createTokenPair({userId, email}, keyStore.publicKey, keyStore.privateKey);
+		const tokens = createTokenPair({userId, email}, keyStore.publicKey, keyStore.privateKey);
 
 		await KeyTokenService.updateOne({ user: new Types.ObjectId(userId) }, {
 			$set: {
