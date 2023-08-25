@@ -18,6 +18,57 @@ class ProductController {
 			message: 'create product success'
 		}).send(res)
 	}
+
+	publishProductByShop = async (req, res, next) => {
+		new SuccessResponse({
+			metadata: await ProductServiceXXX.publishProductByShop({
+				product_shop: req.user.userId,
+				product_id: req.params.id
+			}),
+			message: 'Published product success'
+		}).send(res)
+	}
+	unPublishProductByShop = async (req, res, next) => {
+		new SuccessResponse({
+			metadata: await ProductServiceXXX.unPublishProductByShop({
+				product_shop: req.user.userId,
+				product_id: req.params.id
+			}),
+			message: 'unPublished product success'
+		}).send(res)
+	}
+
+
+	/**
+	 * Get all drafts for shop
+	 * @param {Number} limit 
+	 * @param {Number} skip 
+	 * @return {JSON}
+	 */
+	findAllDraftsForShop = async (req, res, next) => {
+		new SuccessResponse({
+			metadata: await ProductServiceXXX.findAllDraftsForShop({
+				product_shop: req.user.userId
+			}),
+			message: 'Get list draft success'
+		}).send(res)
+	}
+
+	findAllPublishedsForShop = async (req, res, next) => {
+		new SuccessResponse({
+			metadata: await ProductServiceXXX.findAllPublishedsForShop({
+				product_shop: req.user.userId
+			}),
+			message: 'Get list published success'
+		}).send(res)
+	}
+
+	searchAllPublishedsForUser = async (req, res, next) => {
+		new SuccessResponse({
+			metadata: await ProductServiceXXX.searchProducts(req.params),
+			message: 'Search all published success'
+		}).send(res)
+	}
 }
 
 module.exports = new ProductController();
