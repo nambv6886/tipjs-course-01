@@ -37,6 +37,20 @@ class ProductController {
 			message: 'unPublished product success'
 		}).send(res)
 	}
+	updateProduct = async (req, res, next) => {
+		const {product_type} = req.body;
+		new SuccessResponse({
+			metadata: await ProductServiceXXX.updateProduct(
+				product_type,
+				req.params.productId,
+				{
+					...req.body,
+					product_shop: req.user.userId,
+				}
+			),
+			message: 'Update product success'
+		}).send(res)
+	}
 
 
 	/**
