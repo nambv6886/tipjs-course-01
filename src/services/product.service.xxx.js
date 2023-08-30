@@ -94,7 +94,6 @@ class ProductFactory {
   }
 }
 
-
 class Product {
   constructor({
     product_name,

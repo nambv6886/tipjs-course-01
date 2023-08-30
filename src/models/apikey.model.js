@@ -3,12 +3,11 @@
 const {
     model,
     Schema
-} = require('mongoose'); // Erase if already required
+} = require('mongoose');
 
 const DOCUMENT_NAME = 'ApiKey';
 const COLLECTION_NAME = 'ApiKeys'
 
-// Declare the Schema of the Mongo model
 const apiKeySchema = new Schema({
 	key:{
 		type:String,
