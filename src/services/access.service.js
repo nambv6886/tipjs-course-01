@@ -9,7 +9,7 @@ const KeyTokenService = require('./keyToken.service');
 const { createTokenPair, verifyJWT } = require('../auth/authUtils');
 const { getInfoData } = require('../utils');
 
-const { BadRequestRequestError, AuthFailureError, ForbidenError } = require('../core/error.response');
+const { BadRequestError, AuthFailureError, ForbidenError } = require('../core/error.response');
 const { findByEmail } = require('./shop.service');
 const { Types } = require('mongoose');
 
@@ -29,7 +29,7 @@ class AccessService {
 			// step1: check email
 			const holderShop = await ShopModel.findOne({email}).lean();
 			if(holderShop) {
-				throw new BadRequestRequestError('Error: Shop already registered!');
+				throw new BadRequestError('Error: Shop already registered!');
 			}
 
 			const passwordHash = await bcrypt.hash(password, 10);
@@ -104,7 +104,7 @@ class AccessService {
 	static login = async ({email, password, refreshToken = null}) => {
 		const foundShop = await findByEmail({email});
 		if (!foundShop) {
-			throw new BadRequestRequestError('Shop not registered!')
+			throw new BadRequestError('Shop not registered!')
 		}
 
 		const match = bcrypt.compare(password, foundShop.password);

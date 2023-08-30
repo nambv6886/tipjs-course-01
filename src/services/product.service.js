@@ -1,6 +1,6 @@
 'use strict'
 
-const { BadRequestRequestError } = require('../core/error.response');
+const { BadRequestError } = require('../core/error.response');
 
 const {
   product,
@@ -16,7 +16,7 @@ class ProductFactory {
       case 'Clothing': 
         return new Clothing(payload).createProduct();
       default: 
-        throw new BadRequestRequestError('Invalid product type');
+        throw new BadRequestError('Invalid product type');
     }
   }
 }
@@ -50,10 +50,10 @@ class Product {
 class Clothing extends Product {
   async createProduct() {
     const newClothing =  await clothing.create(this.product_attributes);
-    if (!newClothing) throw new BadRequestRequestError('Create new clothing error');
+    if (!newClothing) throw new BadRequestError('Create new clothing error');
 
     const newProduct = await super.createProduct();
-    if (!newProduct) throw new BadRequestRequestError('Create new product error');
+    if (!newProduct) throw new BadRequestError('Create new product error');
 
     return newProduct;
   }
@@ -65,10 +65,10 @@ class Electronic extends Product {
       ...this.product_attributes,
       product_shop: this.product_shop
     });
-    if (!newElectronic) throw new BadRequestRequestError('Create new electronic error');
+    if (!newElectronic) throw new BadRequestError('Create new electronic error');
 
     const newProduct = await super.createProduct(newElectronic._id);
-    if (!newProduct) throw new BadRequestRequestError('Create new product error');
+    if (!newProduct) throw new BadRequestError('Create new product error');
 
     return newProduct;
   }
