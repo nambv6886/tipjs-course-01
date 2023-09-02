@@ -1,8 +1,11 @@
 'use strict'
 const { convertToObjectIdMongo } = require('../utils');
 
-const { BadRequestError } = require('../core/error.response');
+const { BadRequestError, NotFoundError } = require('../core/error.response');
 const Discount = require('../models/discount.model');
+const { findAllProducts } = require('../models/repositories/product.repo');
+const { findAllDiscountCodesUnSelect } = require('../models/repositories/discount.repo');
+const discountModel = require('../models/discount.model');
 
 class DiscountService {
   static async createDiscountCode(payload) {
@@ -53,5 +56,71 @@ class DiscountService {
 
   static async updateDiscountCode() {
     
+  }
+
+  static async getAllDiscountCodesWithProduct({
+    code, shopId, userId, limit, page
+  }) {
+
+    const foundDiscount = await Discount.findOne({
+      discount_code: code,
+      discount_shopId: convertToObjectIdMongo(shopId),
+    }).lean();
+    if(!foundDiscount && !foundDiscount.discount_is_active) {
+      throw new NotFoundError('Discount not exists!')
+    }
+
+    const {
+      discount_applies_to,
+      discount_product_ids
+    } = foundDiscount;
+    let products;
+    if (discount_applies_to === 'all') {
+      // get all product
+      products = await findAllProducts({
+        filter: {
+          product_shop: convertToObjectIdMongo(shopId),
+          isPublished: true
+        },
+        limit: +limit,
+        page: +page,
+        sort: 'ctime',
+        select: ['product_name']
+      })
+    }
+    if(discount_applies_to ==='specific') {
+      // get product ids
+      products = await findAllProducts({
+        filter: {
+          _id: {
+            $in: discount_product_ids
+          },
+          isPublished: true
+        },
+        limit: +limit,
+        page: +page,
+        sort: 'ctime',
+        select: ['product_name']
+      })
+    }
+
+    return products;
+  }
+
+  static async getAllDiscountCodesByShop({
+    limit, page, shopId
+  }) {
+    const discounts = await findAllDiscountCodesUnSelect({
+      limit: +limit,
+      page: +page,
+      filter: {
+        discount_shopId: convertToObjectIdMongo(shopId),
+        discount_is_active: true
+      },
+      unSelect: ['__v', 'discount_shopId'],
+      model: discountModel
+    });
+
+    return discounts;
   }
 }
