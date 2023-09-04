@@ -10,7 +10,8 @@ const {
 } = require('../../models/product.model');
 const {
   getSelectData,
-  getUnSelectData
+  getUnSelectData,
+  convertToObjectIdMongo
 } = require('../../utils');
 
 const publishProductByShop = async ({ product_shop, product_id}) => {
@@ -100,6 +101,12 @@ const updateProductById = async ({
   })
 }
 
+const getProductById = async (productId) => {
+  return await product.findOne({
+    _id: convertToObjectIdMongo(productId)
+  }).lean();
+}
+
 const queryProduct = async ({ query, limit, skip}) => {
   return await product.find(query)
   .populate({
@@ -119,5 +126,6 @@ module.exports = {
   searchProductByUser,
   findAllProducts,
   findProduct,
-  updateProductById
+  updateProductById,
+  getProductById
 }
