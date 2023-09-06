@@ -107,6 +107,19 @@ const getProductById = async (productId) => {
   }).lean();
 }
 
+const checkProductByServer = async (products) => {
+  return await Promise.all(products.map(async product => {
+    const foundProduct = await getProductById(product.productId);
+    if (foundProduct) {
+      return {
+        price: foundProduct.product_price,
+        quantity: product.quantity,
+        productId: foundProduct.productId
+      }
+    }
+  }))
+}
+
 const queryProduct = async ({ query, limit, skip}) => {
   return await product.find(query)
   .populate({
@@ -119,6 +132,7 @@ const queryProduct = async ({ query, limit, skip}) => {
 }
 
 module.exports = {
+  checkProductByServer,
   findAllDraftsForShop,
   publishProductByShop,
   findAllPublishedsForShop,
