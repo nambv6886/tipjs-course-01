@@ -15,6 +15,25 @@ app.use(express.json());
 app.use(express.urlencoded({ 
   extended: true
 }))
+
+const redis = require('redis');
+// (async () => {
+//   const redisClient = redis.createClient({
+//     url: 'redis://localhost:6379'
+//   });
+//   // redisClient.on('error', err => console.log('Redis Client Error', err));
+//    await redisClient.connect()
+//    await redisClient.subscribe('key', 'value');
+//    const value = await redisClient.get('key');
+//    console.log('value:',value)
+
+// })()
+
+
+require('./tests/inventory.redis');
+const productRedisTest = require('./tests/product.redis');
+productRedisTest.purchaseProduct('product:001', 10)
+
 // init db
 require('./dbs/init.mongodb');
 // const { checkOverLoad } = require('./helpers/check.connect');
